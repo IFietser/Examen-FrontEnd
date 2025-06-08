@@ -18,7 +18,7 @@ function App() {
         <Container className="talleres-container d-flex flex-column min-vh-100 justify-content-center align-items-center">
         <Routes>
           <Route path="/" element={<h1>Hola mundo</h1>} />
-          <Route path="/licitaciones" element={<Licitaciones />} />
+          <Route path="/Licitaciones" element={<Licitaciones />} />
         </Routes>
         </Container>
         <Footer />
