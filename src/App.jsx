@@ -16,10 +16,10 @@ function App() {
       <>
         <Navbar />
         <Container className="talleres-container d-flex flex-column min-vh-100 justify-content-center align-items-center">
-        <Routes>
-          <Route path="/" element={<h1>Hola mundo</h1>} />
-          <Route path="/Licitaciones" element={<Licitaciones />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<h1>Hola mundo</h1>} />
+            <Route path="/licitaciones" element={<Licitaciones />} />
+          </Routes>
         </Container>
         <Footer />
       </>
