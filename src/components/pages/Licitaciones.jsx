@@ -1,43 +1,121 @@
-import { useEffect, useState } from "react";
-import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import React, { useState } from "react";
+import {
+  Container,
+  Spinner,
+  Alert,
+  Form,
+  Row,
+  Col,
+  Button,
+} from "react-bootstrap";
 
 const ITEMS_PER_PAGE = 10;
 
 const Licitaciones = () => {
-  const [data, setData] = useState([]);
+  const [licitaciones, setLicitaciones] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [urlConsulta, setUrlConsulta] = useState("");
+
+  const [fecha, setFecha] = useState("");
   const [estado, setEstado] = useState("");
-  const [fechaDesde, setFechaDesde] = useState("");
-  const [fechaHasta, setFechaHasta] = useState("");
+  const [ticket, setTicket] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [detalleSeleccionado, setDetalleSeleccionado] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [goToPage, setGoToPage] = useState("");
 
-  useEffect(() => {
-    fetch("/data.json")
-      .then((res) => res.json())
-      .then((json) => setData(json.Listado || []));
-  }, []);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const estados = [
+    { label: "Publicada - 5", value: "publicada" },
+    { label: "Cerrada - 6", value: "cerrada" },
+    { label: "Desierta - 7", value: "desierta" },
+    { label: "Adjudicada - 8", value: "adjudicada" },
+    { label: "Revocada - 15", value: "revocada" },
+    { label: "Suspendida - 19", value: "suspendida" },
+  ];
+
+  const fetchLicitaciones = async (fechaStr, estadoStr, ticketStr) => {
+    const proxyUrl = "https://api.allorigins.win/raw?url=";
+    const formatearFecha = (fechaISO) => {
+      const [yyyy, mm, dd] = fechaISO.split("-");
+      return `${dd}${mm}${yyyy}`;
+    };
+
+    const fechaFormateada = formatearFecha(fechaStr);
+    const estadoParam = estadoStr ? `&estado=${estadoStr}` : "";
+    const ticketParam = ticketStr ? `&ticket=${ticketStr}` : "";
+
+    const targetUrl = `https://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json?fecha=${fechaFormateada}${estadoParam}${ticketParam}`;
+
+    setUrlConsulta(targetUrl);
+
+    try {
+      setLoading(true);
+      setError(null);
+      setLicitaciones([]);
+      setCurrentPage(1);
+
+      const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos");
+      }
+
+      const data = await response.json();
+
+      if (data.Codigo === 10500) {
+        throw new Error(data.Mensaje || "Error desconocido");
+      }
+
+      setLicitaciones(data.Listado || []);
+      setHasSearched(true); // <-- Indicamos que ya se hizo la búsqueda
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBuscar = () => {
+    if (!fecha) {
+      setError("Por favor selecciona una fecha");
+      return;
+    }
+    if (!estado) {
+      setError("Por favor selecciona un estado");
+      return;
+    }
+    if (!ticket) {
+      setError("Por favor ingresa el ticket");
+      return;
+    }
+    setError(null);
+    setHasSearched(false); // <-- Reiniciamos antes de hacer la búsqueda
+    fetchLicitaciones(fecha, estado, ticket);
+  };
+
+  const totalPages = Math.ceil(licitaciones.length / ITEMS_PER_PAGE);
+  const paginatedLicitaciones = licitaciones.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const getPageGroupWithEllipsis = () => {
     const groupSize = 5;
     let start = currentPage - Math.floor(groupSize / 2);
 
-    if (start < 2) start = 2; // Siempre mostramos el 1 al inicio
+    if (start < 2) start = 2;
     if (start + groupSize - 1 > totalPages - 1) {
       start = Math.max(totalPages - groupSize, 2);
     }
 
     const end = Math.min(start + groupSize - 1, totalPages - 1);
-
     const pages = [];
 
-    pages.push(1); // Siempre mostrar la primera página
+    if (totalPages === 0) return pages;
 
+    pages.push(1);
     if (start > 2) {
       pages.push("start-ellipsis");
     }
@@ -51,273 +129,246 @@ const Licitaciones = () => {
     }
 
     if (totalPages > 1) {
-      pages.push(totalPages); // Siempre mostrar la última página
+      pages.push(totalPages);
     }
 
     return pages;
   };
 
-  // Filtrar datos según estado y fechas
-  const filtrar = () => {
-    let resultados = data.filter((item) => {
-      const fecha = new Date(item.FechaCierre);
-      const fechaStr = fecha.toISOString().split("T")[0];
-      const desdeStr = fechaDesde || null;
-      const hastaStr = fechaHasta || null;
-
-      return (
-        (estado ? item.CodigoEstado === parseInt(estado) : true) &&
-        (desdeStr ? fechaStr >= desdeStr : true) &&
-        (hastaStr ? fechaStr <= hastaStr : true)
-      );
-    });
-
-    // Ordenar siempre por fecha
-    resultados.sort((a, b) => {
-      const fechaA = new Date(a.FechaCierre);
-      const fechaB = new Date(b.FechaCierre);
-      return fechaA - fechaB;
-    });
-
-    return resultados;
-  };
-
-  const filteredData = filtrar();
-
-  // Paginación
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  // Handlers para filtros (reinician la página)
-  const onChangeEstado = (e) => {
-    setEstado(e.target.value);
-    setCurrentPage(1);
-  };
-  const onChangeFechaDesde = (e) => {
-    setFechaDesde(e.target.value);
-    setCurrentPage(1);
-  };
-  const onChangeFechaHasta = (e) => {
-    setFechaHasta(e.target.value);
-    setCurrentPage(1);
-  };
-
   const handleGoToPageChange = (e) => {
-    // Solo números o vacío
-    if (/^\d*$/.test(e.target.value)) {
-      setGoToPage(e.target.value);
+    const value = e.target.value;
+    if (
+      value === "" ||
+      (/^\d+$/.test(value) && +value >= 1 && +value <= totalPages)
+    ) {
+      setGoToPage(value);
     }
-  };
-
-  const handleGoToPage = () => {
-    const pageNum = parseInt(goToPage);
-    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
-      setCurrentPage(pageNum);
-    }
-    setGoToPage("");
   };
 
   const handleGoToPageKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Evita que se envíe el formulario si está en un <form>
+      e.preventDefault();
       handleGoToPage();
     }
   };
 
-  // Abrir modal con detalle
-  const handleVerDetalle = (licitacion) => {
-    setDetalleSeleccionado(licitacion);
-    setShowModal(true);
-  };
-
-  // Cerrar modal
-  const handleCerrarModal = () => {
-    setShowModal(false);
-    setDetalleSeleccionado(null);
-  };
-
-  const handleLimpiarFiltros = () => {
-    setEstado("");
-    setFechaDesde("");
-    setFechaHasta("");
-    /*setCurrentPage(1);*/
+  const handleGoToPage = () => {
+    const pageNumber = Number(goToPage);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      setGoToPage("");
+    }
   };
 
   return (
-    <Container>
-      <h2 className="mt-4 mb-4">Listado de las licitaciones</h2>
+    <Container className="mt-4">
+      <h1 className="mb-4 text-center">Listado de licitaciones</h1>
 
-      {/* Filtros */}
-      <Form className="mb-4">
-        <Form.Group controlId="estado" className="mb-3">
-          <Form.Label>Estado</Form.Label>
-          <Form.Control
-            type="text"
-            inputMode="numeric" // Teclado numérico en móviles
-            pattern="[0-9]*"
-            placeholder="Código de estado"
-            value={estado}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^\d*$/.test(value)) {
-                setEstado(value);
+      <Form>
+        <Row className="mb-3 justify-content-center">
+          <Col md={3} className="d-flex flex-column align-items-center">
+            <Form.Group
+              className="w-100"
+              style={{ maxWidth: "250px", textAlign: "center" }}
+            >
+              <Form.Label className="text-center w-100">Fecha</Form.Label>
+              <Form.Control
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+                style={{ textAlign: "center" }}
+              />
+            </Form.Group>
+          </Col>
+
+          <Col md={3} className="d-flex flex-column align-items-center">
+            <Form.Group
+              className="w-100"
+              style={{ maxWidth: "250px", textAlign: "center" }}
+            >
+              <Form.Label className="text-center w-100">Estado</Form.Label>
+              <Form.Select
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+                style={{ textAlign: "center", textAlignLast: "center" }}
+              >
+                <option value="">No seleccionado</option>
+                {estados.map((est) => (
+                  <option
+                    key={est.value}
+                    value={est.value}
+                    style={{ textAlign: "center" }}
+                  >
+                    {est.label}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={3} className="d-flex flex-column align-items-center">
+            <Form.Group
+              className="w-100"
+              style={{ maxWidth: "250px", textAlign: "center" }}
+            >
+              <Form.Label className="text-center w-100">Ticket</Form.Label>
+              <Form.Control
+                type="text"
+                value={ticket}
+                onChange={(e) => setTicket(e.target.value)}
+                placeholder="Ingrese ticket"
+                style={{ textAlign: "center" }}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row className="mb-3">
+          <Col md={12} className="d-flex justify-content-center gap-2">
+            <Button onClick={handleBuscar} variant="primary">
+              Buscar
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setFecha("");
+                setEstado("");
+                setTicket("");
+                setLicitaciones([]);
+                setError(null);
                 setCurrentPage(1);
-              }
-            }}
-          />
-        </Form.Group>
+                setUrlConsulta("");
+                setHasSearched(false);
+              }}
+            >
+              Limpiar filtros
+            </Button>
+          </Col>
+        </Row>
 
-        <Form.Group controlId="fechaDesde" className="mb-3">
-          <Form.Label>Fecha Desde</Form.Label>
-          <Form.Control
-            type="date"
-            value={fechaDesde}
-            onChange={onChangeFechaDesde}
-          />
-        </Form.Group>
-        <Form.Group controlId="fechaHasta" className="mb-3">
-          <Form.Label>Fecha Hasta</Form.Label>
-          <Form.Control
-            type="date"
-            value={fechaHasta}
-            onChange={onChangeFechaHasta}
-          />
-        </Form.Group>
-        <Button variant="secondary" onClick={handleLimpiarFiltros}>
-          Limpiar filtros
-        </Button>
+        {urlConsulta && (
+          <Alert variant="info" className="mb-4 text-center">
+            <div>
+              <strong>Endpoint consultado:</strong>
+            </div>
+            <code
+              style={{
+                wordBreak: "break-all",
+                display: "block",
+                marginTop: "0.5rem",
+              }}
+            >
+              {urlConsulta}
+            </code>
+          </Alert>
+        )}
       </Form>
 
-      {/* Tabla */}
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Fecha Cierre</th>
-            <th>Estado</th>
-            <th>Detalles</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((licitacion, idx) => (
-            <tr key={idx}>
-              <td>{licitacion.CodigoExterno}</td>
-              <td>{new Date(licitacion.FechaCierre).toLocaleString()}</td>
-              <td>{licitacion.CodigoEstado}</td> {/* Nuevo dato */}
-              <td>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleVerDetalle(licitacion)}
-                >
-                  Ver
-                </Button>
-              </td>
-            </tr>
-          ))}
-          {paginatedData.length === 0 && (
-            <tr>
-              <td colSpan={4} className="text-center">
-                No hay resultados que mostrar.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+      {error && (
+        <Alert variant="danger" className="text-center">
+          Error: {error}
+        </Alert>
+      )}
 
-      {/* Paginación */}
-      <div className="d-flex justify-content-center align-items-center mb-4 gap-2 flex-wrap">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
-        >
-          Anterior
-        </Button>
+      {loading && (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+          <p>Cargando licitaciones...</p>
+        </div>
+      )}
 
-        {getPageGroupWithEllipsis().map((page, idx) => {
-          if (page === "start-ellipsis" || page === "end-ellipsis") {
-            return (
-              <span key={page + idx} className="px-2">
-                ...
-              </span>
-            );
-          }
+      {!loading && !error && licitaciones.length === 0 && (
+        <Alert variant="info" className="text-center">
+          {hasSearched ? "No se encontraron liquidaciones." : "Favor realizar una búsqueda."}
+        </Alert>
+      )}
 
-          return (
+      {!loading && !error && paginatedLicitaciones.length > 0 && (
+        <>
+          <div className="text-center mb-3">
+            <strong>Total de registros encontrados: {licitaciones.length}</strong>
+          </div>
+          <table className="table table-striped" style={{ width: "100%" }}>
+            <thead>
+              <tr>
+                <th>Codigo Externo</th>
+                <th>Nombre</th>
+                <th>Código Estado</th>
+                <th>Fecha Cierre</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedLicitaciones.map((licitacion) => (
+                <tr key={licitacion.CodigoExterno}>
+                  <td>{licitacion.CodigoExterno}</td>
+                  <td>{licitacion.Nombre}</td>
+                  <td>{licitacion.CodigoEstado}</td>
+                  <td>
+                    {new Date(licitacion.FechaCierre).toLocaleString("es-CL")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="d-flex justify-content-center align-items-center mt-3 gap-2 flex-wrap">
             <Button
-              key={page}
-              variant={page === currentPage ? "primary" : "light"}
-              onClick={() => setCurrentPage(page)}
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
             >
-              {page}
+              Anterior
             </Button>
-          );
-        })}
 
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
-        >
-          Siguiente
-        </Button>
-      </div>
+            {getPageGroupWithEllipsis().map((page, idx) => {
+              if (page === "start-ellipsis" || page === "end-ellipsis") {
+                return (
+                  <span key={page + idx} className="px-2">
+                    ...
+                  </span>
+                );
+              }
 
-      {/* 🔍 Input para ir a página */}
-      <div className="d-flex justify-content-center align-items-center mb-4">
-        <Form className="d-flex align-items-center gap-2">
-          <Form.Control
-            type="text"
-            min="1"
-            max={totalPages}
-            placeholder="Ir a página"
-            value={goToPage}
-            onChange={handleGoToPageChange} // Este handler ya no funcionará igual
-            onKeyDown={handleGoToPageKeyDown}
-            style={{ width: "100px" }}
-          />
-          <Button variant="outline-primary" onClick={handleGoToPage}>
-            Ir
-          </Button>
-        </Form>
-      </div>
+              return (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "primary" : "light"}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              );
+            })}
 
-      {/* Modal de detalle */}
-      <Modal show={showModal} onHide={handleCerrarModal} centered>
-        <Modal.Header>
-          <Modal.Title>Detalles Licitación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {detalleSeleccionado ? (
-            <>
-              <p>
-                <strong>Código Externo:</strong>{" "}
-                {detalleSeleccionado.CodigoExterno}
-              </p>
-              <p>
-                <strong>Nombre:</strong> {detalleSeleccionado.Nombre}
-              </p>
-              <p>
-                <strong>Estado:</strong> {detalleSeleccionado.CodigoEstado}
-              </p>
-              <p>
-                <strong>Fecha Cierre:</strong>{" "}
-                {new Date(detalleSeleccionado.FechaCierre).toLocaleString()}
-              </p>
-              {/* Agrega más detalles aquí si quieres */}
-            </>
-          ) : (
-            <p>Cargando detalle...</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer className="d-flex justify-content-center">
-          <Button variant="secondary" onClick={handleCerrarModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <Button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              Siguiente
+            </Button>
+          </div>
+
+          <div className="d-flex justify-content-center align-items-center mb-4 mt-4">
+            <Form
+              className="d-flex align-items-center gap-2"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <Form.Control
+                type="text"
+                min="1"
+                max={totalPages}
+                placeholder="Ir a página"
+                value={goToPage}
+                onChange={handleGoToPageChange}
+                onKeyDown={handleGoToPageKeyDown}
+                style={{ width: "100px" }}
+              />
+              <Button variant="outline-primary" onClick={handleGoToPage}>
+                Ir
+              </Button>
+            </Form>
+          </div>
+        </>
+      )}
     </Container>
   );
 };
