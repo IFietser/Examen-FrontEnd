@@ -1,10 +1,13 @@
 body {
-  background-color: whitesmoke;
+  background-color: #cac8c8;
 }
 
 .home-title {
   font-weight: bold;
   color: #212529;
+  margin-top: 2.5rem; /* Más espacio arriba del h2 */
+  margin-bottom: 1.5rem;
+  font-size: 1.35rem;
 }
 
 .home-btn {
@@ -34,4 +37,44 @@ body {
 
 .home-card-title {
   font-weight: bold;
+}
+.card {
+  background-color: #cac8c8;
+  border-style: inset;
+  border-width: 3px;
+  border-color: #b0b0b0;
+}
+.home-img {
+  margin: 2.5rem 0 2.5rem 0; /* Más espacio arriba y abajo de la imagen */
+}
+
+.info-title {
+  color: #1a237e;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.info-desc {
+  font-size: 1.15rem;
+  color: #222;
+}
+
+.info-btn {
+  display: inline-block;
+  border: 1.5px solid #1565c0;
+  color: #1565c0;
+  padding: 0.75rem 2.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.info-btn:hover,
+.info-btn:focus {
+  color: #1a237e;
+  color: #fff;
 }

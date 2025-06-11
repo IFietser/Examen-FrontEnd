@@ -1,4 +1,5 @@
 .navbar-nav .nav-link {
+  background-color: #cac8c8;
   color: #212529 !important; /* Texto oscuro */
   font-weight: normal;
   font-size: 1.15rem;
@@ -10,8 +11,8 @@
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link:focus,
 .navbar-nav .nav-link:hover {
-  background: #212529; /* Fondo azul al pasar el mouse o activo */
-  color: #fff !important; /* Texto blanco */
+  background: #212529;
+  color: #cac8c8 !important; /* Texto blanco */
 }
 .navbar-logo {
   height: 50px;
@@ -29,13 +30,14 @@
   font-weight: bold;
   color: black;
 }
-
-.navbar-link {
-  font-size: 1.2rem;
-  color: #212529 !important;
-  font-weight: bold;
-  font-style: italic;
-  padding: 0.5rem 1.2rem;
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:focus,
+.navbar-nav .nav-link:hover {
+  background: #212529;
+  color: #cac8c8; /* Texto blanco */
+}
+.navbar-toggler {
+  background-color: #212529 !important;
+  padding: 2px 6px;
   border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
 }

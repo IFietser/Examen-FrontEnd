@@ -6,29 +6,18 @@ import "./css/Footer.css";
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-light py-4 mt-auto">
+    <footer className="footer-navbar-style py-4 mt-auto">
       <Container>
         <Row>
-          <Col md={3} className="mb-3">
-            <img
-              src={Logo}
-              alt=""
-              style={{ width: "150px", marginBottom: "10px" }}
-              className="img-fluid"
-            />
+          <Col md={3} className="mb-3 d-flex flex-column align-items-start">
+            <img src={Logo} alt="Logo Chile" className="footer-logo mb-2" />
             <div>
-              <strong>Dirección ChileCompras</strong>
+              <strong>Dirección LicitaSeguros </strong>
               <br />
               Ministerio de Hacienda, Gobierno de Chile
               <br />
-              Monjitas 392 - Piso 8, Santiago de Chile
+              Av. Innovación 1234, Oficina 801, Santiago Centro
               <br />
-              <a
-                href="https://www.chilecompra.cl/terminos-y-condiciones-de-uso/"
-                className="text-light text-decoration-underline"
-              >
-                Términos y condiciones
-              </a>
             </div>
           </Col>
           <Col md={3} className="mb-3">
@@ -37,7 +26,7 @@ const Footer = () => {
               <li>
                 <a
                   href="https://comprador.mercadopublico.cl/registrarme"
-                  className="text-light text-decoration-underline"
+                  className="footer-link"
                 >
                   Registro nuevos organismos compradores
                 </a>
@@ -45,7 +34,7 @@ const Footer = () => {
               <li>
                 <a
                   href="https://datos-abiertos.chilecompra.cl/"
-                  className="text-light text-decoration-underline"
+                  className="footer-link"
                 >
                   Datos Abiertos ChileCompra
                 </a>
@@ -53,7 +42,7 @@ const Footer = () => {
               <li>
                 <a
                   href="https://capacitacion.chilecompra.cl/"
-                  className="text-light text-decoration-underline"
+                  className="footer-link"
                 >
                   Capacitación
                 </a>
@@ -61,9 +50,17 @@ const Footer = () => {
               <li>
                 <a
                   href="https://ayuda.mercadopublico.cl/"
-                  className="text-light text-decoration-underline"
+                  className="footer-link"
                 >
                   Centro de Ayuda
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.chilecompra.cl/terminos-y-condiciones-de-uso/"
+                  className="footer-link"
+                >
+                  Términos y condiciones
                 </a>
               </li>
             </ul>
@@ -71,17 +68,11 @@ const Footer = () => {
           <Col md={3} className="mb-3">
             <strong>Mesa de ayuda</strong>
             <div>
-              <a
-                href="tel:6007000600"
-                className="text-light text-decoration-underline"
-              >
+              <a href="tel:6007000600" className="footer-link">
                 600 7000 600
               </a>
               <br />
-              <a
-                href="tel:+56442360646"
-                className="text-light text-decoration-underline"
-              >
+              <a href="tel:+56442360646" className="footer-link">
                 +56 4 4236 0646
               </a>
             </div>
@@ -91,28 +82,28 @@ const Footer = () => {
             <div className="mb-2">
               <a
                 href="https://web.facebook.com/people/ChileCompra/100064656435287/?_rdc=1&_rdr#"
-                className="text-light me-2"
+                className="footer-link me-2"
               >
                 <i className="bi bi-facebook"></i>
               </a>
-              <a href="https://x.com/chilecompra" className="text-light me-2">
+              <a href="https://x.com/chilecompra" className="footer-link me-2">
                 <i className="bi bi-twitter"></i>
               </a>
               <a
-                href="linkedin.com/company/chilecompra?originalSubdomain=cl"
-                className="text-light me-2"
+                href="https://linkedin.com/company/chilecompra?originalSubdomain=cl"
+                className="footer-link me-2"
               >
                 <i className="bi bi-linkedin"></i>
               </a>
               <a
                 href="https://www.youtube.com/user/chilecompratv"
-                className="text-light me-2"
+                className="footer-link me-2"
               >
                 <i className="bi bi-youtube"></i>
               </a>
               <a
                 href="https://www.instagram.com/chilecompra/"
-                className="text-light"
+                className="footer-link"
               >
                 <i className="bi bi-instagram"></i>
               </a>

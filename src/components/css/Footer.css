@@ -1,0 +1,30 @@
+.footer-navbar-style {
+  background-color: #cac8c8;
+  color: black;
+}
+
+.footer-logo {
+  height: 50px;
+  width: auto;
+  background-color: #212529;
+  object-fit: contain;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+.footer-link {
+  color: black !important;
+  text-decoration: underline;
+  border-radius: 6px;
+  padding: 2px 6px;
+  transition: background 0.2s, color 0.2s;
+  display: inline-block;
+}
+
+.footer-link:hover,
+.footer-link:focus {
+  background: #212529;
+  color: #fff !important;
+  text-decoration: none;
+}
