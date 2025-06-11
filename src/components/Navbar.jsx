@@ -17,6 +17,9 @@ function ColorSchemesExample() {
             <Nav.Link as={NavLink} to="/licitaciones" end>
               Licitaciones
             </Nav.Link>
+            <Nav.Link as={NavLink} to="/Proveedores" end>
+              Proveedores
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

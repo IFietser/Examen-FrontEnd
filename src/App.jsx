@@ -5,6 +5,7 @@ import "./components/css/App.css";
 import Footer from "./components/Footer";
 //IMPORT PAGES
 import Licitaciones from "./components/pages/Licitaciones";
+import Proveedores from "./components/pages/Proveedores";
 //IMPORT NAVBAR
 import Navbar from "./components/Navbar";
 //IMPORT CONTAINER
@@ -19,6 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<h1>Hola mundo</h1>} />
             <Route path="/licitaciones" element={<Licitaciones />} />
+            <Route path="/proveedores" element={<Proveedores />} />
           </Routes>
         </Container>
         <Footer />
