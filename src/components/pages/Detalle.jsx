@@ -1,5 +1,14 @@
-import { Container, Form, Row, Col, Button } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Row,
+  Col,
+  Button,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
 import React, { useState } from "react";
+import "../css/Detalle.css";
 
 const Detalle = () => {
   const [detalle, setDetalle] = useState([]);
@@ -110,7 +119,7 @@ const Detalle = () => {
               <Form.Control
                 type="text"
                 placeholder="Ingrese ticket"
-                style={{ textAlign: "center" }}
+                className="text-center"
                 value={ticket}
                 onChange={(e) => setTicket(e.target.value)}
               />
@@ -124,7 +133,7 @@ const Detalle = () => {
               <Form.Control
                 type="text"
                 placeholder="Ingrese código externo"
-                style={{ textAlign: "center" }}
+                className="text-center"
                 value={codigoexterno}
                 onChange={(e) => setCodigoExterno(e.target.value)}
               />
@@ -143,21 +152,32 @@ const Detalle = () => {
         </Row>
       </Form>
 
-      {loading && <p className="text-center mt-4">Cargando...</p>}
-      {error && <p className="text-center text-danger mt-4">{error}</p>}
-      {hasSearched && detalle.length === 0 && !loading && (
-        <p className="text-center mt-4">No se encontraron resultados.</p>
+      {/* Mostrar URL consultada */}
+      {urlConsulta && (
+        <Alert variant="info" className="mb-4 text-center">
+          <div>
+            <strong>Endpoint consultado:</strong>
+          </div>
+          <code className="endpoint-code">{urlConsulta}</code>
+        </Alert>
       )}
 
+      {loading && (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+          <p>Cargando Detalle de licitaciones...</p>
+        </div>
+      )}
+      {!loading && !error && detalle.length === 0 && (
+        <Alert variant="info" className="text-center">
+          {hasSearched
+            ? "No se encontraron proveedores."
+            : "Favor realizar una búsqueda."}
+        </Alert>
+      )}
+      {error && <p className="text-center text-danger mt-4">{error}</p>}
       {detalle.length > 0 && (
         <div className="mt-4">
-          <h5 className="text-center mb-3">Resultados:</h5>
-          {fechaCreacion && (
-            <p className="text-center text-muted">
-              Fecha de consulta: {new Date(fechaCreacion).toLocaleString()}
-            </p>
-          )}
-
           <div className="d-flex justify-content-center gap-2 mb-3">
             <Button variant="success" onClick={copiarJSON}>
               Copiar JSON
@@ -300,8 +320,26 @@ const Detalle = () => {
                             ? "Ocultar Fechas"
                             : "Mostrar Fechas"}
                         </Button>
-                        {mostrarDetalles[index]?.fechas &&
-                          renderTablaObjeto(licitacion.Fechas)}
+                        {mostrarDetalles[index]?.fechas && (
+                          <div className="mt-2">
+                            <table className="ficha-table mb-2">
+                              <tbody>
+                                {Object.entries(licitacion.Fechas).map(
+                                  ([key, val]) => (
+                                    <tr key={key}>
+                                      <td>
+                                        <strong>{key}:</strong>
+                                      </td>
+                                      <td>
+                                        {val !== null ? val.toString() : "null"}
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </>
                     )}
 
@@ -458,57 +496,92 @@ const Detalle = () => {
                         </Button>
                         {mostrarDetalles[index]?.adjudicacion && (
                           <div className="mt-2">
-                            <table className="table table-bordered table-sm">
+                            {/* Información adicional entre Comprador y Fechas */}
+                            <table className="ficha-table mb-2">
                               <tbody>
                                 <tr>
                                   <td>
-                                    <strong>Tipo</strong>
+                                    <strong>Días Cierre Licitación:</strong>
                                   </td>
-                                  <td>{licitacion.Adjudicacion.Tipo}</td>
+                                  <td>{licitacion.DiasCierreLicitacion}</td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <strong>Fecha</strong>
+                                    <strong>Informada:</strong>
                                   </td>
-                                  <td>
-                                    {licitacion.Adjudicacion.Fecha
-                                      ? new Date(
-                                          licitacion.Adjudicacion.Fecha
-                                        ).toLocaleString()
-                                      : "No especificada"}
-                                  </td>
+                                  <td>{licitacion.Informada}</td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <strong>Número</strong>
+                                    <strong>Código Tipo:</strong>
                                   </td>
-                                  <td>{licitacion.Adjudicacion.Numero}</td>
+                                  <td>{licitacion.CodigoTipo}</td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <strong>Número Oferentes</strong>
+                                    <strong>Tipo:</strong>
                                   </td>
-                                  <td>
-                                    {licitacion.Adjudicacion.NumeroOferentes}
-                                  </td>
+                                  <td>{licitacion.Tipo}</td>
                                 </tr>
                                 <tr>
                                   <td>
-                                    <strong>URL Acta</strong>
+                                    <strong>Tipo Convocatoria:</strong>
                                   </td>
+                                  <td>{licitacion.TipoConvocatoria}</td>
+                                </tr>
+                                <tr>
                                   <td>
-                                    {licitacion.Adjudicacion.UrlActa ? (
-                                      <a
-                                        href={licitacion.Adjudicacion.UrlActa}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        Ver Acta
-                                      </a>
-                                    ) : (
-                                      "No disponible"
-                                    )}
+                                    <strong>Moneda:</strong>
                                   </td>
+                                  <td>{licitacion.Moneda}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Etapas:</strong>
+                                  </td>
+                                  <td>{licitacion.Etapas}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Estado Etapas:</strong>
+                                  </td>
+                                  <td>{licitacion.EstadoEtapas}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Toma Razón:</strong>
+                                  </td>
+                                  <td>{licitacion.TomaRazon}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Estado Publicidad Ofertas:</strong>
+                                  </td>
+                                  <td>{licitacion.EstadoPublicidadOfertas}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Justificación Publicidad:</strong>
+                                  </td>
+                                  <td>{licitacion.JustificacionPublicidad}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Contrato:</strong>
+                                  </td>
+                                  <td>{licitacion.Contrato}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Obras:</strong>
+                                  </td>
+                                  <td>{licitacion.Obras}</td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <strong>Cantidad Reclamos:</strong>
+                                  </td>
+                                  <td>{licitacion.CantidadReclamos}</td>
                                 </tr>
                               </tbody>
                             </table>

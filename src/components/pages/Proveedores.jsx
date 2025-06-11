@@ -1,5 +1,66 @@
-import { Container, Form, Row, Col, Button } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  Row,
+  Col,
+  Button,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
 import React, { useState } from "react";
+import "../css/Proveedores.css";
+
+// Componente reutilizable para exportar JSON
+const ExportarJSON = ({ data }) => {
+  const copiarJSON = () => {
+    const texto = JSON.stringify(
+      data.map((empresa) => ({
+        CodigoEmpresa: empresa.CodigoEmpresa,
+        NombreEmpresa: empresa.NombreEmpresa,
+      })),
+      null,
+      2
+    );
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("JSON copiado al portapapeles.");
+    });
+  };
+
+  const descargarJSON = () => {
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          data.map((empresa) => ({
+            CodigoEmpresa: empresa.CodigoEmpresa,
+            NombreEmpresa: empresa.NombreEmpresa,
+          })),
+          null,
+          2
+        ),
+      ],
+      {
+        type: "application/json",
+      }
+    );
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "proveedores.json";
+    enlace.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="d-flex justify-content-center gap-2 mb-3">
+      <Button variant="success" onClick={copiarJSON}>
+        Copiar JSON
+      </Button>
+      <Button variant="info" onClick={descargarJSON}>
+        Descargar JSON
+      </Button>
+    </div>
+  );
+};
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
@@ -65,7 +126,7 @@ const Proveedores = () => {
               <Form.Control
                 type="text"
                 placeholder="Ingrese ticket"
-                style={{ textAlign: "center" }}
+                className="text-center"
                 value={ticket}
                 onChange={(e) => setTicket(e.target.value)}
               />
@@ -79,7 +140,7 @@ const Proveedores = () => {
               <Form.Control
                 type="text"
                 placeholder="Ingrese RUT"
-                style={{ textAlign: "center" }}
+                className="text-center"
                 value={rut}
                 onChange={(e) => setRut(e.target.value)}
               />
@@ -98,22 +159,35 @@ const Proveedores = () => {
         </Row>
       </Form>
 
-      {loading && <p className="text-center mt-4">Cargando...</p>}
+      {/* Mostrar URL consultada */}
+      {urlConsulta && (
+        <Alert variant="info" className="mb-4 text-center">
+          <div>
+            <strong>Endpoint consultado:</strong>
+          </div>
+          <code className="endpoint-code">{urlConsulta}</code>
+        </Alert>
+      )}
+      {loading && (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+          <p>Cargando Proveedores...</p>
+        </div>
+      )}
 
-      {error && <p className="text-center text-danger mt-4">{error}</p>}
-
-      {hasSearched && proveedores.length === 0 && !loading && (
-        <p className="text-center mt-4">No se encontraron proveedores.</p>
+      {!loading && !error && proveedores.length === 0 && (
+        <Alert variant="info" className="text-center">
+          {hasSearched
+            ? "No se encontraron proveedores."
+            : "Favor realizar una búsqueda."}
+        </Alert>
       )}
 
       {proveedores.length > 0 && (
         <div className="mt-4">
-          <h5 className="text-center mb-3">Resultados:</h5>
-          {fechaCreacion && (
-            <p className="text-center text-muted">
-              Fecha de consulta: {new Date(fechaCreacion).toLocaleString()}
-            </p>
-          )}
+          {/* Botones Copiar/Descargar JSON */}
+          <ExportarJSON data={proveedores} />
+
           <table className="table table-bordered table-striped">
             <thead className="table-dark">
               <tr>
@@ -131,34 +205,6 @@ const Proveedores = () => {
             </tbody>
           </table>
         </div>
-      )}
-
-      {/* Mostrar URL consultada */}
-      {hasSearched && urlConsulta && (
-        <div style={{ marginTop: "20px", fontSize: "0.9rem", color: "#555" }}>
-          <p>
-            <b>URL consultada:</b> {urlConsulta}
-          </p>
-        </div>
-      )}
-
-      {/* Mostrar datos crudos o mensaje */}
-      {hasSearched && (
-        <pre
-          style={{
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            background: "#eee",
-            padding: "10px",
-            marginTop: "20px",
-          }}
-        >
-          {JSON.stringify(
-            proveedores.length > 0 ? proveedores : "No hay proveedores",
-            null,
-            2
-          )}
-        </pre>
       )}
     </Container>
   );

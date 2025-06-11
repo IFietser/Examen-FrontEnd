@@ -8,6 +8,40 @@ import {
   Col,
   Button,
 } from "react-bootstrap";
+import "../css/Licitaciones.css";
+
+// Componente reutilizable para exportar JSON
+const ExportarJSON = ({ data }) => {
+  const copiarJSON = () => {
+    const texto = JSON.stringify(data, null, 2);
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("JSON copiado al portapapeles.");
+    });
+  };
+
+  const descargarJSON = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = "licitaciones.json";
+    enlace.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="d-flex justify-content-center gap-2 mb-3">
+      <Button variant="success" onClick={copiarJSON}>
+        Copiar JSON
+      </Button>
+      <Button variant="info" onClick={descargarJSON}>
+        Descargar JSON
+      </Button>
+    </div>
+  );
+};
 
 const ITEMS_PER_PAGE = 10;
 
@@ -163,41 +197,33 @@ const Licitaciones = () => {
   return (
     <Container className="mt-4">
       <h1 className="mb-4 text-center">Listado de licitaciones</h1>
-
       <Form>
         <Row className="mb-3 justify-content-center">
           <Col md={3} className="d-flex flex-column align-items-center">
-            <Form.Group
-              className="w-100"
-              style={{ maxWidth: "250px", textAlign: "center" }}
-            >
+            <Form.Group className="w-100 form-group-centered">
               <Form.Label className="text-center w-100">Fecha</Form.Label>
               <Form.Control
                 type="date"
                 value={fecha}
                 onChange={(e) => setFecha(e.target.value)}
-                style={{ textAlign: "center" }}
+                className="text-center"
               />
             </Form.Group>
           </Col>
-
           <Col md={3} className="d-flex flex-column align-items-center">
-            <Form.Group
-              className="w-100"
-              style={{ maxWidth: "250px", textAlign: "center" }}
-            >
+            <Form.Group className="w-100 form-group-centered">
               <Form.Label className="text-center w-100">Estado</Form.Label>
               <Form.Select
                 value={estado}
                 onChange={(e) => setEstado(e.target.value)}
-                style={{ textAlign: "center", textAlignLast: "center" }}
+                className="text-center select-centered"
               >
                 <option value="">No seleccionado</option>
                 {estados.map((est) => (
                   <option
                     key={est.value}
                     value={est.value}
-                    style={{ textAlign: "center" }}
+                    className="text-center"
                   >
                     {est.label}
                   </option>
@@ -205,19 +231,15 @@ const Licitaciones = () => {
               </Form.Select>
             </Form.Group>
           </Col>
-
           <Col md={3} className="d-flex flex-column align-items-center">
-            <Form.Group
-              className="w-100"
-              style={{ maxWidth: "250px", textAlign: "center" }}
-            >
+            <Form.Group className="w-100 form-group-centered">
               <Form.Label className="text-center w-100">Ticket</Form.Label>
               <Form.Control
                 type="text"
                 value={ticket}
                 onChange={(e) => setTicket(e.target.value)}
                 placeholder="Ingrese ticket"
-                style={{ textAlign: "center" }}
+                className="text-center"
               />
             </Form.Group>
           </Col>
@@ -251,15 +273,7 @@ const Licitaciones = () => {
             <div>
               <strong>Endpoint consultado:</strong>
             </div>
-            <code
-              style={{
-                wordBreak: "break-all",
-                display: "block",
-                marginTop: "0.5rem",
-              }}
-            >
-              {urlConsulta}
-            </code>
+            <code className="endpoint-code">{urlConsulta}</code>
           </Alert>
         )}
       </Form>
@@ -279,15 +293,23 @@ const Licitaciones = () => {
 
       {!loading && !error && licitaciones.length === 0 && (
         <Alert variant="info" className="text-center">
-          {hasSearched ? "No se encontraron liquidaciones." : "Favor realizar una búsqueda."}
+          {hasSearched
+            ? "No se encontraron licitaciones."
+            : "Favor realizar una búsqueda."}
         </Alert>
       )}
 
       {!loading && !error && paginatedLicitaciones.length > 0 && (
         <>
           <div className="text-center mb-3">
-            <strong>Total de registros encontrados: {licitaciones.length}</strong>
+            <strong>
+              Total de registros encontrados: {licitaciones.length}
+            </strong>
           </div>
+
+          {/* Botones Copiar/Descargar JSON */}
+          <ExportarJSON data={licitaciones} />
+
           <table className="table table-striped" style={{ width: "100%" }}>
             <thead>
               <tr>
@@ -360,7 +382,7 @@ const Licitaciones = () => {
                 value={goToPage}
                 onChange={handleGoToPageChange}
                 onKeyDown={handleGoToPageKeyDown}
-                style={{ width: "100px" }}
+                className="goto-page-input"
               />
               <Button variant="outline-primary" onClick={handleGoToPage}>
                 Ir

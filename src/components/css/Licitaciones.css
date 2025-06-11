@@ -1,0 +1,18 @@
+.form-group-centered {
+  max-width: 250px;
+  text-align: center;
+}
+
+.select-centered {
+  text-align-last: center;
+}
+
+.endpoint-code {
+  word-break: break-all;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.goto-page-input {
+  width: 100px;
+}
