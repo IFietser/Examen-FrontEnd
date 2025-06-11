@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 //IMPORT PAGES
 import Licitaciones from "./components/pages/Licitaciones";
 import Proveedores from "./components/pages/Proveedores";
+import Detalle from "./components/pages/Detalle";
 //IMPORT NAVBAR
 import Navbar from "./components/Navbar";
 //IMPORT CONTAINER
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<h1>Hola mundo</h1>} />
             <Route path="/licitaciones" element={<Licitaciones />} />
             <Route path="/proveedores" element={<Proveedores />} />
+            <Route path="/detallelicitaciones" element={<Detalle />} />
           </Routes>
         </Container>
         <Footer />
