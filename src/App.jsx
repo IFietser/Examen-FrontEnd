@@ -4,6 +4,7 @@ import "./components/css/App.css";
 //IMPORT COMPONENTS
 import Footer from "./components/Footer";
 //IMPORT PAGES
+import Home from "./components/pages/Home";
 import Licitaciones from "./components/pages/Licitaciones";
 import Proveedores from "./components/pages/Proveedores";
 import Detalle from "./components/pages/Detalle";
@@ -19,7 +20,8 @@ function App() {
         <Navbar />
         <Container className="talleres-container d-flex flex-column min-vh-100 justify-content-center align-items-center">
           <Routes>
-            <Route path="/" element={<h1>Hola mundo</h1>} />
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/licitaciones" element={<Licitaciones />} />
             <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/detallelicitaciones" element={<Detalle />} />
