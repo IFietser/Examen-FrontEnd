@@ -320,26 +320,8 @@ const Detalle = () => {
                             ? "Ocultar Fechas"
                             : "Mostrar Fechas"}
                         </Button>
-                        {mostrarDetalles[index]?.fechas && (
-                          <div className="mt-2">
-                            <table className="ficha-table mb-2">
-                              <tbody>
-                                {Object.entries(licitacion.Fechas).map(
-                                  ([key, val]) => (
-                                    <tr key={key}>
-                                      <td>
-                                        <strong>{key}:</strong>
-                                      </td>
-                                      <td>
-                                        {val !== null ? val.toString() : "null"}
-                                      </td>
-                                    </tr>
-                                  )
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                        {mostrarDetalles[index]?.fechas &&
+                          renderTablaObjeto(licitacion.Fechas)}
                       </>
                     )}
 
@@ -356,131 +338,64 @@ const Detalle = () => {
                           : "Mostrar Información del Contrato"}
                       </Button>
 
-                      {mostrarDetalles[index]?.contrato && (
-                        <div className="mt-2">
-                          <p>
-                            <strong>Unidad Tiempo Evaluación:</strong>{" "}
-                            {licitacion.UnidadTiempoEvaluacion}
-                          </p>
-                          <p>
-                            <strong>Dirección Visita:</strong>{" "}
-                            {licitacion.DireccionVisita || "No especificada"}
-                          </p>
-                          <p>
-                            <strong>Dirección Entrega:</strong>{" "}
-                            {licitacion.DireccionEntrega || "No especificada"}
-                          </p>
-                          <p>
-                            <strong>Estimación:</strong> {licitacion.Estimacion}
-                          </p>
-                          <p>
-                            <strong>Fuente Financiamiento:</strong>{" "}
-                            {licitacion.FuenteFinanciamiento}
-                          </p>
-                          <p>
-                            <strong>Visibilidad Monto:</strong>{" "}
-                            {licitacion.VisibilidadMonto}
-                          </p>
-                          <p>
-                            <strong>Monto Estimado:</strong>{" "}
-                            {licitacion.MontoEstimado?.toLocaleString("es-CL")}{" "}
-                            CLP
-                          </p>
-                          <p>
-                            <strong>Tiempo:</strong> {licitacion.Tiempo}
-                          </p>
-                          <p>
-                            <strong>Unidad Tiempo:</strong>{" "}
-                            {licitacion.UnidadTiempo}
-                          </p>
-                          <p>
-                            <strong>Modalidad:</strong> {licitacion.Modalidad}
-                          </p>
-                          <p>
-                            <strong>Tipo Pago:</strong> {licitacion.TipoPago}
-                          </p>
-                          <p>
-                            <strong>Nombre Responsable Pago:</strong>{" "}
-                            {licitacion.NombreResponsablePago}
-                          </p>
-                          <p>
-                            <strong>Email Responsable Pago:</strong>{" "}
-                            {licitacion.EmailResponsablePago ||
-                              "No especificado"}
-                          </p>
-                          <p>
-                            <strong>Nombre Responsable Contrato:</strong>{" "}
-                            {licitacion.NombreResponsableContrato}
-                          </p>
-                          <p>
-                            <strong>Email Responsable Contrato:</strong>{" "}
-                            {licitacion.EmailResponsableContrato ||
-                              "No especificado"}
-                          </p>
-                          <p>
-                            <strong>Fono Responsable Contrato:</strong>{" "}
-                            {licitacion.FonoResponsableContrato ||
-                              "No especificado"}
-                          </p>
-                          <p>
-                            <strong>Prohibición Contratación:</strong>{" "}
-                            {licitacion.ProhibicionContratacion}
-                          </p>
-                          <p>
-                            <strong>SubContratación:</strong>{" "}
-                            {licitacion.SubContratacion}
-                          </p>
-                          <p>
-                            <strong>Unidad Tiempo Duración Contrato:</strong>{" "}
-                            {licitacion.UnidadTiempoDuracionContrato}
-                          </p>
-                          <p>
-                            <strong>Tiempo Duración Contrato:</strong>{" "}
-                            {licitacion.TiempoDuracionContrato}
-                          </p>
-                          <p>
-                            <strong>Tipo Duración Contrato:</strong>{" "}
-                            {licitacion.TipoDuracionContrato ||
-                              "No especificado"}
-                          </p>
-                          <p>
-                            <strong>Justificación Monto Estimado:</strong>{" "}
-                            {licitacion.JustificacionMontoEstimado}
-                          </p>
-                          <p>
-                            <strong>Observación Contractual:</strong>{" "}
-                            {licitacion.ObservacionContract ||
-                              "No especificada"}
-                          </p>
-                          <p>
-                            <strong>Extensión Plazo:</strong>{" "}
-                            {licitacion.ExtensionPlazo}
-                          </p>
-                          <p>
-                            <strong>¿Es Base Tipo?:</strong>{" "}
-                            {licitacion.EsBaseTipo}
-                          </p>
-                          <p>
-                            <strong>Unidad Tiempo Contrato Licitación:</strong>{" "}
-                            {licitacion.UnidadTiempoContratoLicitacion}
-                          </p>
-                          <p>
-                            <strong>Valor Tiempo Renovación:</strong>{" "}
-                            {licitacion.ValorTiempoRenovacion}
-                          </p>
-                          <p>
-                            <strong>Periodo Tiempo Renovación:</strong>{" "}
-                            {licitacion.PeriodoTiempoRenovacion ||
-                              "No especificado"}
-                          </p>
-                          <p>
-                            <strong>¿Es Renovable?:</strong>{" "}
-                            {licitacion.EsRenovable}
-                          </p>
-                        </div>
-                      )}
+                      {mostrarDetalles[index]?.contrato &&
+                        renderTablaObjeto({
+                          "Unidad Tiempo Evaluación":
+                            licitacion.UnidadTiempoEvaluacion,
+                          "Dirección Visita":
+                            licitacion.DireccionVisita || "No especificada",
+                          "Dirección Entrega":
+                            licitacion.DireccionEntrega || "No especificada",
+                          Estimación: licitacion.Estimacion,
+                          "Fuente Financiamiento":
+                            licitacion.FuenteFinanciamiento,
+                          "Visibilidad Monto": licitacion.VisibilidadMonto,
+                          "Monto Estimado":
+                            licitacion.MontoEstimado?.toLocaleString("es-CL") +
+                            " CLP",
+                          Tiempo: licitacion.Tiempo,
+                          "Unidad Tiempo": licitacion.UnidadTiempo,
+                          Modalidad: licitacion.Modalidad,
+                          "Tipo Pago": licitacion.TipoPago,
+                          "Nombre Responsable Pago":
+                            licitacion.NombreResponsablePago,
+                          "Email Responsable Pago":
+                            licitacion.EmailResponsablePago ||
+                            "No especificado",
+                          "Nombre Responsable Contrato":
+                            licitacion.NombreResponsableContrato,
+                          "Email Responsable Contrato":
+                            licitacion.EmailResponsableContrato ||
+                            "No especificado",
+                          "Fono Responsable Contrato":
+                            licitacion.FonoResponsableContrato ||
+                            "No especificado",
+                          "Prohibición Contratación":
+                            licitacion.ProhibicionContratacion,
+                          SubContratación: licitacion.SubContratacion,
+                          "Unidad Tiempo Duración Contrato":
+                            licitacion.UnidadTiempoDuracionContrato,
+                          "Tiempo Duración Contrato":
+                            licitacion.TiempoDuracionContrato,
+                          "Tipo Duración Contrato":
+                            licitacion.TipoDuracionContrato ||
+                            "No especificado",
+                          "Justificación Monto Estimado":
+                            licitacion.JustificacionMontoEstimado,
+                          "Observación Contractual":
+                            licitacion.ObservacionContract || "No especificada",
+                          "Extensión Plazo": licitacion.ExtensionPlazo,
+                          "¿Es Base Tipo?": licitacion.EsBaseTipo,
+                          "Unidad Tiempo Contrato Licitación":
+                            licitacion.UnidadTiempoContratoLicitacion,
+                          "Valor Tiempo Renovación":
+                            licitacion.ValorTiempoRenovacion,
+                          "Periodo Tiempo Renovación":
+                            licitacion.PeriodoTiempoRenovacion ||
+                            "No especificado",
+                          "¿Es Renovable?": licitacion.EsRenovable,
+                        })}
                     </>
-
                     {/* Botón para mostrar/ocultar Adjudicación */}
                     {licitacion.Adjudicacion && (
                       <>
@@ -494,102 +409,10 @@ const Detalle = () => {
                             ? "Ocultar Adjudicación"
                             : "Mostrar Adjudicación"}
                         </Button>
-                        {mostrarDetalles[index]?.adjudicacion && (
-                          <div className="mt-2">
-                            {/* Información adicional entre Comprador y Fechas */}
-                            <table className="ficha-table mb-2">
-                              <tbody>
-                                <tr>
-                                  <td>
-                                    <strong>Días Cierre Licitación:</strong>
-                                  </td>
-                                  <td>{licitacion.DiasCierreLicitacion}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Informada:</strong>
-                                  </td>
-                                  <td>{licitacion.Informada}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Código Tipo:</strong>
-                                  </td>
-                                  <td>{licitacion.CodigoTipo}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Tipo:</strong>
-                                  </td>
-                                  <td>{licitacion.Tipo}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Tipo Convocatoria:</strong>
-                                  </td>
-                                  <td>{licitacion.TipoConvocatoria}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Moneda:</strong>
-                                  </td>
-                                  <td>{licitacion.Moneda}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Etapas:</strong>
-                                  </td>
-                                  <td>{licitacion.Etapas}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Estado Etapas:</strong>
-                                  </td>
-                                  <td>{licitacion.EstadoEtapas}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Toma Razón:</strong>
-                                  </td>
-                                  <td>{licitacion.TomaRazon}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Estado Publicidad Ofertas:</strong>
-                                  </td>
-                                  <td>{licitacion.EstadoPublicidadOfertas}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Justificación Publicidad:</strong>
-                                  </td>
-                                  <td>{licitacion.JustificacionPublicidad}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Contrato:</strong>
-                                  </td>
-                                  <td>{licitacion.Contrato}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Obras:</strong>
-                                  </td>
-                                  <td>{licitacion.Obras}</td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <strong>Cantidad Reclamos:</strong>
-                                  </td>
-                                  <td>{licitacion.CantidadReclamos}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                        {mostrarDetalles[index]?.adjudicacion &&
+                          renderTablaObjeto(licitacion.Adjudicacion)}
                       </>
                     )}
-
                     {/* Botón para mostrar/ocultar Items */}
                     {licitacion.Items && licitacion.Items.Listado && (
                       <>
@@ -611,7 +434,7 @@ const Detalle = () => {
                             </p>
                             {/* Botón para mostrar/ocultar Detalle de Items */}
                             <Button
-                              variant="outline-primary"
+                              variant="outline-secondary"
                               size="sm"
                               onClick={() =>
                                 toggleSeccion(index, "detalleItems")
